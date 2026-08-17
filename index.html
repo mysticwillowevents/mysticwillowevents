@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mystic Willow Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Raleway', sans-serif;
+      background-image: url('background.jpg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(20,10,40,0.35), rgba(10,5,30,0.55));
+      z-index: 0;
+    }
+
+    /* Top nav — sage green, above banner */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background-color: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+    }
+
+    nav .logo {
+      color: #fff;
+      font-size: 1.1rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    nav .logo img {
+      height: 52px;
+      width: 52px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(212,168,67,0.9);
+    }
+
+    nav ul { list-style: none; display: flex; gap: 28px; }
+    nav ul a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: #d4edcc; }
+
+    /* Login button in nav */
+    .nav-login-btn {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.05rem;
+      color: #d4a843;
+      background: transparent;
+      border: 1px solid rgba(212,168,67,0.65);
+      border-radius: 20px;
+      padding: 6px 20px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .nav-login-btn:hover {
+      background: rgba(212,168,67,0.15);
+      border-color: rgba(212,168,67,0.95);
+      color: #fff;
+    }
+
+    /* Login modal overlay */
+    .login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,5,25,0.72);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .login-overlay.open { display: flex; }
+
+    .login-modal {
+      background: rgba(30,60,45,0.97);
+      border: 1px solid rgba(212,168,67,0.55);
+      border-radius: 20px;
+      padding: 2.8rem 2.8rem 2.4rem;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity:0; transform: translateY(-24px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0)     scale(1);    }
+    }
+
+    .login-modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      background: none;
+      border: none;
+      color: rgba(212,168,67,0.7);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .login-modal-close:hover { color: #d4a843; }
+
+    .login-modal h2 {
+      font-family: 'Dancing Script', cursive;
+      color: #d4a843;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .login-modal-sub {
+      text-align: center;
+      color: rgba(212,168,67,0.65);
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .login-field {
+      margin-bottom: 1.1rem;
+    }
+
+    .login-field label {
+      display: block;
+      font-family: 'Dancing Script', cursive;
+      color: rgba(212,168,67,0.85);
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    .login-field input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .login-field input:focus {
+      border-color: rgba(212,168,67,0.85);
+      background: rgba(255,255,255,0.11);
+    }
+    .login-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .login-forgot {
+      text-align: right;
+      margin-top: -6px;
+      margin-bottom: 1.4rem;
+    }
+    .login-forgot a {
+      font-size: 0.88rem;
+      color: rgba(212,168,67,0.6);
+      text-decoration: none;
+      font-family: 'Raleway', sans-serif;
+      transition: color 0.2s;
+    }
+    .login-forgot a:hover { color: #d4a843; }
+
+    .login-submit {
+      width: 100%;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.15rem;
+      color: #d4a843;
+      background: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+      border-radius: 20px;
+      padding: 11px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .login-submit:hover {
+      background: #245a45;
+      border-color: rgba(212,168,67,0.9);
+    }
+
+    .login-divider {
+      text-align: center;
+      color: rgba(212,168,67,0.3);
+      font-size: 0.85rem;
+      margin: 1.2rem 0 0.8rem;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .login-register {
+      text-align: center;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      color: rgba(212,168,67,0.65);
+    }
+    .login-register a {
+      color: #d4a843;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .login-register a:hover { color: #fff; }
+
+    /* Banner */
+    .banner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-height: 330px;
+      overflow: hidden;
+    }
+
+    .banner img {
+      width: 100%;
+      max-height: 330px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* Bottom nav strip — sage green, below banner */
+    .subnav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      padding: 0.75rem 2.5rem;
+      background-color: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+    }
+
+    .subnav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .subnav a:hover { color: #d4edcc; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 75vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: left;
+      padding: 1.5rem 2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(160,100,255,0.2);
+      border: 1px solid rgba(200,150,255,0.4);
+      color: #e8d0ff;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3rem, 7vw, 5rem);
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      padding-left: 8rem;
+      color: #d4a843;
+      line-height: 1.15;
+      text-shadow: 0 2px 30px rgba(212,168,67,0.3);
+      margin-bottom: 1.2rem;
+    }
+
+    .subtitle {
+      color: #d4a843;
+      line-height: 1.7;
+      margin-bottom: 0.3rem;
+      text-align: justify;
+      font-size: 1.15rem;
+      width: 100%;
+      display: block;
+      z-index: 2;
+      position: relative;
+    }
+
+    .buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 2rem; }
+
+    .btn-primary {
+      background: #2e6f57;
+      color: #d4a843;
+      border: 1px solid rgba(212,168,67,0.6);
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #245a45; }
+
+    .btn-secondary {
+      background: #2e6f57;
+      color: #d4a843;
+      border: 1px solid rgba(212,168,67,0.6);
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: #245a45; }
+
+    .hero-box {
+      background: rgba(180,220,190,0.18);
+      border-radius: 65% 35% 20% 80% / 75% 40% 60% 25%;
+      padding: 5rem 3rem 7rem 5.5rem;
+      backdrop-filter: blur(12px);
+      width: 100%;
+      max-width: 1100px;
+      position: relative;
+    }
+
+    .star {
+      position: absolute;
+      color: silver;
+      pointer-events: none;
+      animation: twinkle 2.5s ease-in-out infinite;
+      transform: translate(-50%, -50%);
+    }
+    /* Upper-left cluster */
+    .star:nth-child(1)  { top: -28%; left: 24%; font-size: 1rem;   animation-delay: 0s; }
+    .star:nth-child(2)  { top: -22%; left: 28%; font-size: 0.8rem; animation-delay: 0.3s; }
+    .star:nth-child(3)  { top: -18%; left: 33%; font-size: 1.1rem; animation-delay: 0.6s; }
+    .star:nth-child(4)  { top: -30%; left: 30%; font-size: 0.7rem; animation-delay: 0.9s; }
+    .star:nth-child(5)  { top: -25%; left: 20%; font-size: 0.9rem; animation-delay: 0.2s; }
+    /* Top-centre cluster */
+    .star:nth-child(6)  { top: -16%; left: 38%; font-size: 0.8rem; animation-delay: 0.5s; }
+    .star:nth-child(7)  { top: -20%; left: 44%; font-size: 1.2rem; animation-delay: 0.8s; }
+    .star:nth-child(8)  { top: -13%; left: 50%; font-size: 0.9rem; animation-delay: 0.1s; }
+    .star:nth-child(9)  { top: -18%; left: 56%; font-size: 0.7rem; animation-delay: 0.4s; }
+    .star:nth-child(10) { top: -15%; left: 62%; font-size: 1rem;   animation-delay: 1.1s; }
+    .star:nth-child(11) { top: -10%; left: 67%; font-size: 0.8rem; animation-delay: 0.7s; }
+    /* Upper-right cluster */
+    .star:nth-child(12) { top: -20%; left: 72%; font-size: 1.1rem; animation-delay: 0.3s; }
+    .star:nth-child(13) { top: -25%; left: 79%; font-size: 0.8rem; animation-delay: 0.9s; }
+    .star:nth-child(14) { top: -18%; left: 85%; font-size: 1rem;   animation-delay: 0.5s; }
+    .star:nth-child(15) { top: -28%; left: 88%; font-size: 0.9rem; animation-delay: 1.2s; }
+    .star:nth-child(16) { top: -12%; left: 93%; font-size: 1.2rem; animation-delay: 0.2s; }
+    .star:nth-child(17) { top: -22%; left: 97%; font-size: 0.7rem; animation-delay: 0.8s; }
+    .star:nth-child(18) { top: -8%;  left: 99%; font-size: 0.9rem; animation-delay: 0.4s; }
+    /* Far upper-right */
+    .star:nth-child(19) { top: -30%; left: 93%; font-size: 1rem;   animation-delay: 1s; }
+    .star:nth-child(20) { top: -10%; left: 105%;font-size: 0.8rem; animation-delay: 0.6s; }
+    .star:nth-child(21) { top: -20%; left: 108%;font-size: 1.1rem; animation-delay: 0.3s; }
+    /* Right side */
+    .star:nth-child(22) { top: 5%;   left: 102%;font-size: 0.9rem; animation-delay: 0.7s; }
+    .star:nth-child(23) { top: 15%;  left: 105%;font-size: 0.8rem; animation-delay: 1.3s; }
+    .star:nth-child(24) { top: 28%;  left: 103%;font-size: 1rem;   animation-delay: 0.2s; }
+    .star:nth-child(25) { top: 38%;  left: 100%;font-size: 0.7rem; animation-delay: 0.9s; }
+    /* Lower-right */
+    .star:nth-child(26) { top: 48%;  left: 95%; font-size: 1rem;   animation-delay: 0.5s; }
+    .star:nth-child(27) { top: 52%;  left: 85%; font-size: 0.8rem; animation-delay: 1.1s; }
+    .star:nth-child(28) { top: 50%;  left: 70%; font-size: 0.9rem; animation-delay: 0.4s; }
+    /* Lower-left */
+    .star:nth-child(29) { top: 42%;  left: 22%; font-size: 0.8rem; animation-delay: 0.6s; }
+    .star:nth-child(30) { top: 35%;  left: 18%; font-size: 1rem;   animation-delay: 1s; }
+    /* Left side */
+    .star:nth-child(31) { top: 20%;  left: 5%;  font-size: 0.8rem; animation-delay: 0.3s; }
+    .star:nth-child(32) { top: 10%;  left: 2%;  font-size: 1rem;   animation-delay: 0.7s; }
+    .star:nth-child(33) { top: -5%;  left: 8%;  font-size: 0.9rem; animation-delay: 1.2s; }
+    .star:nth-child(34) { top: -15%; left: 14%; font-size: 0.7rem; animation-delay: 0.5s; }
+    .star:nth-child(35) { top: -10%; left: 4%;  font-size: 1.1rem; animation-delay: 0.2s; }
+    /* Extra scattered */
+    .star:nth-child(36) { top: -35%; left: 50%; font-size: 0.8rem; animation-delay: 0.8s; }
+    .star:nth-child(37) { top: -32%; left: 65%; font-size: 0.7rem; animation-delay: 1.4s; }
+    .star:nth-child(38) { top: -38%; left: 38%; font-size: 0.9rem; animation-delay: 0.1s; }
+
+    .about {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: 3rem 4rem;
+      text-align: center;
+    }
+
+    .about p {
+      font-family: sans-serif;
+      font-size: 1.05rem;
+      color: #d4a843;
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+
+    .about p:last-child { margin-bottom: 0; }
+
+    .about-text {
+      margin-top: 0;
+    }
+
+    .about-text p {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1.15rem;
+      color: #d4a843;
+      line-height: 1.5;
+      margin-bottom: 0.3rem;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .events-section {
+      position: relative;
+      z-index: 0;
+      padding: 7rem 3rem 8rem;
+      margin-top: 20px;
+      background: rgba(180,220,190,0.15);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 24px;
+      backdrop-filter: blur(8px);
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .events-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+      color: #d4a843;
+      text-align: center;
+      margin-bottom: 2rem;
+      display: inline-block;
+      background: rgba(180,220,190,0.18);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 50%;
+      padding: 1.5rem 4.5rem 2rem;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: -60px;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .event-card {
+      background: rgba(180,220,190,0.15);
+      border: 1px solid rgba(212,168,67,0.5);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(212,168,67,0.9);
+    }
+
+    .event-img-wrap {
+      width: 100%;
+      height: 200px;
+      background: rgba(46,111,87,0.4);
+      overflow: hidden;
+    }
+
+    .event-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .event-card-body {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .event-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      color: #d4a843;
+      margin-bottom: 0.4rem;
+    }
+
+    .event-date {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      color: rgba(212,168,67,0.8);
+      margin-bottom: 1rem;
+    }
+
+    .event-link {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      color: #fff;
+      background: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+      padding: 8px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .event-link:hover { background: #245a45; }
+
+    .see-more-btn {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.4rem;
+      color: #d4a843;
+      background: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+      padding: 12px 36px;
+      border-radius: 30px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .see-more-btn:hover {
+      background: #245a45;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .events-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Full page star field */
+    .star-field {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star-field .s {
+      position: absolute;
+      color: silver;
+      animation: twinkle 2.5s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 1rem 2rem;
+      padding-left: 6rem;
+    }
+
+    .hero-inner .subtitle {
+      grid-column: 1 / -1;
+    }
+
+    .hero-inner .hero-text {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .hero-inner .about-full {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: 0;
+    }
+
+    .hero-inner .hero-right {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .hero-text {
+      flex: 1;
+      position: relative;
+      padding-top: 2rem;
+    }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .hero-text::before,
+    .hero-text::after {
+      content: '✦';
+      position: absolute;
+      color: silver;
+      animation: twinkle 2.5s ease-in-out infinite;
+      font-size: 0.9rem;
+    }
+    .hero-text::before { top: -8px;  left: -18px; animation-delay: 0.3s; }
+    .hero-text::after  { top: -8px;  right: -18px; animation-delay: 0.9s; }
+
+    h1::before, h1::after {
+      content: '★';
+      color: silver;
+      font-size: 1.2rem;
+      margin: 0 10px;
+      animation: twinkle 2.5s ease-in-out infinite;
+      display: inline-block;
+    }
+    h1::before { animation-delay: 0.2s; }
+    h1::after  { animation-delay: 0.7s; }
+
+    .subtitle::before, .subtitle::after {
+      content: '✦';
+      color: silver;
+      font-size: 0.75rem;
+      margin: 0 8px;
+      animation: twinkle 2.5s ease-in-out infinite;
+      display: inline-block;
+    }
+    .subtitle::before { animation-delay: 0.5s; }
+    .subtitle::after  { animation-delay: 1.1s; }
+
+    .hero-image {
+      width: 320px;
+      height: 380px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 2px solid rgba(212,168,67,0.6);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; }
+      .hero-image { width: 100%; height: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full page star field -->
+  <div class="star-field">
+    <span class="s" style="top:3%;  left:8%;  font-size:1rem;   animation-delay:0s">★</span>
+    <span class="s" style="top:7%;  left:22%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:2%;  left:38%; font-size:1.2rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:5%;  left:55%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:1%;  left:70%; font-size:1rem;   animation-delay:1.1s">★</span>
+    <span class="s" style="top:6%;  left:85%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:4%;  left:95%; font-size:1.1rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:15%; left:3%;  font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:18%; left:15%; font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:12%; left:30%; font-size:0.7rem; animation-delay:1.3s">✦</span>
+    <span class="s" style="top:20%; left:48%; font-size:1.2rem; animation-delay:0.1s">★</span>
+    <span class="s" style="top:14%; left:62%; font-size:0.8rem; animation-delay:0.7s">✦</span>
+    <span class="s" style="top:19%; left:78%; font-size:1rem;   animation-delay:1s">★</span>
+    <span class="s" style="top:16%; left:92%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:30%; left:6%;  font-size:1.1rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:35%; left:18%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:28%; left:35%; font-size:1rem;   animation-delay:1.2s">★</span>
+    <span class="s" style="top:33%; left:52%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:29%; left:68%; font-size:1.1rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:36%; left:82%; font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:32%; left:96%; font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:45%; left:2%;  font-size:0.7rem; animation-delay:1.4s">✦</span>
+    <span class="s" style="top:48%; left:14%; font-size:1.2rem; animation-delay:0.1s">★</span>
+    <span class="s" style="top:42%; left:28%; font-size:0.8rem; animation-delay:0.7s">✦</span>
+    <span class="s" style="top:50%; left:45%; font-size:1rem;   animation-delay:1s">★</span>
+    <span class="s" style="top:44%; left:60%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:47%; left:75%; font-size:1.1rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:43%; left:90%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:60%; left:5%;  font-size:1rem;   animation-delay:1.1s">★</span>
+    <span class="s" style="top:65%; left:20%; font-size:0.7rem; animation-delay:0.5s">✦</span>
+    <span class="s" style="top:58%; left:38%; font-size:1.2rem; animation-delay:0.9s">★</span>
+    <span class="s" style="top:63%; left:55%; font-size:0.8rem; animation-delay:0.3s">✦</span>
+    <span class="s" style="top:61%; left:72%; font-size:1rem;   animation-delay:1.3s">★</span>
+    <span class="s" style="top:66%; left:88%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:75%; left:10%; font-size:1.1rem; animation-delay:0.2s">★</span>
+    <span class="s" style="top:78%; left:25%; font-size:0.8rem; animation-delay:0.8s">✦</span>
+    <span class="s" style="top:72%; left:42%; font-size:1rem;   animation-delay:0.4s">★</span>
+    <span class="s" style="top:80%; left:58%; font-size:0.7rem; animation-delay:1.2s">✦</span>
+    <span class="s" style="top:76%; left:74%; font-size:1.1rem; animation-delay:0.7s">★</span>
+    <span class="s" style="top:79%; left:92%; font-size:0.8rem; animation-delay:0.1s">✦</span>
+    <span class="s" style="top:88%; left:7%;  font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:92%; left:22%; font-size:0.7rem; animation-delay:1s">✦</span>
+    <span class="s" style="top:85%; left:40%; font-size:1.2rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:90%; left:57%; font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:87%; left:75%; font-size:1rem;   animation-delay:0.6s">★</span>
+    <span class="s" style="top:93%; left:90%; font-size:0.7rem; animation-delay:1.4s">✦</span>
+  </div>
+
+  <!-- Login modal -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-modal">
+      <button class="login-modal-close" onclick="closeLogin()">✕</button>
+      <h2>Welcome Back</h2>
+      <p class="login-modal-sub">Sign in to your Mystic Willow account</p>
+      <div class="login-field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" />
+      </div>
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+      </div>
+      <div class="login-forgot"><a href="#">Forgot password?</a></div>
+      <button class="login-submit">Sign In ✦</button>
+      <p class="login-divider">— or —</p>
+      <p class="login-register">New here? <a href="register.html#signup">Create an account</a></p>
+    </div>
+  </div>
+
+  <!-- Top navigation -->
+  <nav>
+    <span class="logo"><img src="logo.jpeg.jpeg" alt="Mystic Willow Logo" /> Mystic Willow Events</span>
+    <button class="nav-login-btn" onclick="openLogin()">✦ Sign In</button>
+  </nav>
+
+  <script>
+    function openLogin()  { document.getElementById('loginOverlay').classList.add('open'); }
+    function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
+    document.getElementById('loginOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeLogin();
+    });
+  </script>
+
+  <!-- Banner image -->
+  <div class="banner">
+    <img src="homepage.jpg.jpeg" alt="Enchanted Forest Banner" />
+  </div>
+
+  <!-- Sub navigation below banner -->
+  <div class="subnav">
+    <a href="index.html">Home</a>
+    <a href="#">Our Story</a>
+    <a href="#">Shop</a>
+    <a href="#">Gallery</a>
+    <a href="events.html">Events</a>
+    <a href="#">Tarot Readings</a>
+    <a href="members.html">Members</a>
+    <a href="#">Contact</a>
+  </div>
+
+  <!-- Hero content -->
+  <section class="hero">
+    <div class="hero-box">
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">★</span><span class="star">✦</span>
+      <span class="star">★</span><span class="star">✦</span>
+      <h1>Merry Meetings</h1>
+      <div class="hero-inner">
+        <p class="subtitle">Welcome to our website! Explore, dream, and discover an event to add to your diary. We're excited to help you find the perfect experience that resonates with you!</p>
+        <div class="hero-text">
+          <div class="about-text">
+            <p>Mystic Willow, a mother–daughter partnership dedicated to creating inspiring mind, body, and spirit experiences.</p>
+            <p>We believe in building uplifting, inclusive spaces where people can explore spirituality, personal growth, and creative expression.</p>
+            <p>We are a Cornish-based company, inspired by the stunning beauty of the sea and countryside. We embrace our surroundings, letting Cornwall's charm shape our creations. Join us in celebrating this unique landscape.</p>
+          </div>
+        </div>
+        <div class="hero-right">
+          <img class="hero-image" src="home page photo..jpg" alt="Mystic Willow" />
+        </div>
+      </div>
+      <div class="buttons">
+        <button class="btn-primary">Check out our events</button>
+        <button class="btn-secondary">Learn more about us</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Events -->
+  <section class="events-section">
+    <h2 class="events-title">✦ Upcoming Events ✦</h2>
+    <div class="events-grid">
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event1.jpg" alt="Event 1" />
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-name">Event Title One</h3>
+          <p class="event-date">📅 Saturday 10th May 2026</p>
+          <a href="#" class="event-link">View Full Details →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event2.jpg" alt="Event 2" />
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-name">Event Title Two</h3>
+          <p class="event-date">📅 Sunday 24th May 2026</p>
+          <a href="#" class="event-link">View Full Details →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event3.jpg" alt="Event 3" />
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-name">Event Title Three</h3>
+          <p class="event-date">📅 Friday 6th June 2026</p>
+          <a href="#" class="event-link">View Full Details →</a>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center; margin-top:2rem;">
+      <a href="events.html" class="see-more-btn">✦ See More Events ✦</a>
+    </div>
+  </section>
+
+</body>
+</html>

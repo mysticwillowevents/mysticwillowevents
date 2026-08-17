@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Mystic Willow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Raleway', sans-serif;
+      background-image: url('background.jpg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(20,10,40,0.35), rgba(10,5,30,0.55));
+      z-index: 0;
+    }
+
+    /* Nav */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background-color: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+    }
+
+    nav .logo {
+      color: #fff;
+      font-size: 1.1rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    nav .logo img {
+      height: 52px;
+      width: 52px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(212,168,67,0.9);
+    }
+
+    /* Banner */
+    .banner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-height: 330px;
+      overflow: hidden;
+    }
+
+    .banner img {
+      width: 100%;
+      max-height: 330px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* Subnav */
+    .subnav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      padding: 0.75rem 2.5rem;
+      background-color: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+    }
+
+    .subnav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .subnav a:hover { color: #d4edcc; }
+
+    /* Login button in nav */
+    .nav-login-btn {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.05rem;
+      color: #d4a843;
+      background: transparent;
+      border: 1px solid rgba(212,168,67,0.65);
+      border-radius: 20px;
+      padding: 6px 20px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .nav-login-btn:hover {
+      background: rgba(212,168,67,0.15);
+      border-color: rgba(212,168,67,0.95);
+      color: #fff;
+    }
+
+    /* Login modal overlay */
+    .login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,5,25,0.72);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .login-overlay.open { display: flex; }
+
+    .login-modal {
+      background: rgba(30,60,45,0.97);
+      border: 1px solid rgba(212,168,67,0.55);
+      border-radius: 20px;
+      padding: 2.8rem 2.8rem 2.4rem;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity:0; transform: translateY(-24px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0)     scale(1);    }
+    }
+
+    .login-modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      background: none;
+      border: none;
+      color: rgba(212,168,67,0.7);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .login-modal-close:hover { color: #d4a843; }
+
+    .login-modal h2 {
+      font-family: 'Dancing Script', cursive;
+      color: #d4a843;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .login-modal-sub {
+      text-align: center;
+      color: rgba(212,168,67,0.65);
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .login-field {
+      margin-bottom: 1.1rem;
+    }
+
+    .login-field label {
+      display: block;
+      font-family: 'Dancing Script', cursive;
+      color: rgba(212,168,67,0.85);
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    .login-field input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .login-field input:focus {
+      border-color: rgba(212,168,67,0.85);
+      background: rgba(255,255,255,0.11);
+    }
+    .login-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .login-forgot {
+      text-align: right;
+      margin-top: -6px;
+      margin-bottom: 1.4rem;
+    }
+    .login-forgot a {
+      font-size: 0.88rem;
+      color: rgba(212,168,67,0.6);
+      text-decoration: none;
+      font-family: 'Raleway', sans-serif;
+      transition: color 0.2s;
+    }
+    .login-forgot a:hover { color: #d4a843; }
+
+    .login-submit {
+      width: 100%;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.15rem;
+      color: #d4a843;
+      background: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+      border-radius: 20px;
+      padding: 11px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .login-submit:hover {
+      background: #245a45;
+      border-color: rgba(212,168,67,0.9);
+    }
+
+    .login-divider {
+      text-align: center;
+      color: rgba(212,168,67,0.3);
+      font-size: 0.85rem;
+      margin: 1.2rem 0 0.8rem;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .login-register {
+      text-align: center;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      color: rgba(212,168,67,0.65);
+    }
+    .login-register a {
+      color: #d4a843;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .login-register a:hover { color: #fff; }
+
+    /* Page content */
+    .page-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 5rem 3rem 6rem;
+      background: rgba(180,220,190,0.15);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 24px;
+      backdrop-filter: blur(8px);
+    }
+
+    .page-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      color: #d4a843;
+      text-align: center;
+      margin-bottom: 2.5rem;
+      display: inline-block;
+      background: rgba(180,220,190,0.18);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 50%;
+      padding: 1.5rem 4.5rem 2rem;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: -60px;
+    }
+
+    /* Events grid */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .event-card {
+      background: rgba(180,220,190,0.15);
+      border: 1px solid rgba(212,168,67,0.5);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(212,168,67,0.9);
+    }
+
+    .event-img-wrap {
+      width: 100%;
+      height: 220px;
+      background: rgba(46,111,87,0.4);
+      overflow: hidden;
+    }
+
+    .event-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .event-card-body {
+      padding: 1.5rem;
+    }
+
+    .event-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6rem;
+      color: #d4a843;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-date {
+      font-size: 1rem;
+      color: rgba(212,168,67,0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .event-location {
+      font-size: 1rem;
+      color: rgba(212,168,67,0.8);
+      margin-bottom: 1rem;
+    }
+
+    .event-desc {
+      font-size: 1.05rem;
+      color: #e8d0ff;
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+    }
+
+    .event-link {
+      font-size: 1rem;
+      color: #fff;
+      background: #2e6f57;
+      border: 1px solid rgba(212,168,67,0.6);
+      padding: 10px 22px;
+      border-radius: 20px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .event-link:hover { background: #245a45; }
+
+    /* Past events carousel */
+    .past-events-section { overflow: hidden; }
+
+    .carousel-wrapper {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+
+    .carousel-wrapper::before,
+    .carousel-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .carousel-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, rgba(180,220,190,0.15), transparent);
+    }
+    .carousel-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, rgba(180,220,190,0.15), transparent);
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      animation: revolve 30s linear infinite;
+      width: max-content;
+    }
+
+    .carousel-track:hover { animation-play-state: paused; }
+
+    .carousel-card {
+      width: 280px;
+      flex-shrink: 0;
+    }
+
+    @keyframes revolve {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(13,10,26,0.95);
+      border-top: 1px solid rgba(184,140,244,0.2);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-logo {
+      font-family: 'Dancing Script', cursive;
+      color: #d4a843;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-text {
+      font-size: 0.85rem;
+      color: rgba(212,168,67,0.6);
+    }
+
+    /* Floating events nav — horizontal snake tongue */
+    .float-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: stretch;
+      cursor: pointer;
+      filter:
+        drop-shadow(0 4px 14px rgba(0,0,0,0.5))
+        drop-shadow(0 0 1px rgba(212,168,67,0.5));
+      transition: filter 0.3s;
+    }
+
+    .float-nav:hover {
+      filter:
+        drop-shadow(0 6px 22px rgba(0,0,0,0.6))
+        drop-shadow(0 0 2px rgba(212,168,67,0.9));
+    }
+
+    /* The rectangular body */
+    .float-nav-body {
+      background: rgba(46,111,87,0.93);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      padding: 11px 10px 11px 20px;
+      width: 160px;
+      overflow: hidden;
+      transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap;
+      gap: 0;
+    }
+
+    .float-nav:hover .float-nav-body {
+      width: 420px;
+    }
+
+    /* The forked tongue tip */
+    .float-nav-tongue {
+      width: 46px;
+      flex-shrink: 0;
+      background: rgba(46,111,87,0.93);
+      align-self: stretch;
+      /* Two-pronged snake tongue shape */
+      clip-path: polygon(
+        0%   0%,
+        100% 27%,
+        8%   46%,
+        8%   54%,
+        100% 73%,
+        0%   100%
+      );
+    }
+
+    /* "More Events" label — always visible */
+    .float-nav-label {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.05rem;
+      color: #d4a843;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+      padding-right: 12px;
+      border-right: 1px solid rgba(212,168,67,0.35);
+    }
+
+    /* Nav links — revealed on hover */
+    .float-nav-links {
+      display: flex;
+      align-items: center;
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition:
+        max-width 0.45s cubic-bezier(0.4,0,0.2,1),
+        opacity   0.3s  ease 0.2s;
+    }
+
+    .float-nav:hover .float-nav-links {
+      max-width: 320px;
+      opacity: 1;
+    }
+
+    .float-nav-links a {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.05rem;
+      color: #d4a843;
+      text-decoration: none;
+      white-space: nowrap;
+      padding: 0 14px;
+      border-right: 1px solid rgba(212,168,67,0.3);
+      transition: color 0.2s;
+    }
+
+    .float-nav-links a:last-child {
+      border-right: none;
+      padding-right: 4px;
+    }
+
+    .float-nav-links a:hover { color: #fff; }
+
+    /* Full page star field */
+    .star-field {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star-field .s {
+      position: absolute;
+      color: silver;
+      animation: twinkle 2.5s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.75); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full page star field -->
+  <div class="star-field">
+    <span class="s" style="top:3%;  left:8%;  font-size:1rem;   animation-delay:0s">★</span>
+    <span class="s" style="top:7%;  left:22%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:2%;  left:38%; font-size:1.2rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:5%;  left:55%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:1%;  left:70%; font-size:1rem;   animation-delay:1.1s">★</span>
+    <span class="s" style="top:6%;  left:85%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:4%;  left:95%; font-size:1.1rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:15%; left:3%;  font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:18%; left:15%; font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:12%; left:30%; font-size:0.7rem; animation-delay:1.3s">✦</span>
+    <span class="s" style="top:20%; left:48%; font-size:1.2rem; animation-delay:0.1s">★</span>
+    <span class="s" style="top:14%; left:62%; font-size:0.8rem; animation-delay:0.7s">✦</span>
+    <span class="s" style="top:19%; left:78%; font-size:1rem;   animation-delay:1s">★</span>
+    <span class="s" style="top:16%; left:92%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:30%; left:6%;  font-size:1.1rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:35%; left:18%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:28%; left:35%; font-size:1rem;   animation-delay:1.2s">★</span>
+    <span class="s" style="top:33%; left:52%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:29%; left:68%; font-size:1.1rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:36%; left:82%; font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:32%; left:96%; font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:45%; left:2%;  font-size:0.7rem; animation-delay:1.4s">✦</span>
+    <span class="s" style="top:48%; left:14%; font-size:1.2rem; animation-delay:0.1s">★</span>
+    <span class="s" style="top:42%; left:28%; font-size:0.8rem; animation-delay:0.7s">✦</span>
+    <span class="s" style="top:50%; left:45%; font-size:1rem;   animation-delay:1s">★</span>
+    <span class="s" style="top:44%; left:60%; font-size:0.7rem; animation-delay:0.4s">✦</span>
+    <span class="s" style="top:47%; left:75%; font-size:1.1rem; animation-delay:0.8s">★</span>
+    <span class="s" style="top:43%; left:90%; font-size:0.8rem; animation-delay:0.2s">✦</span>
+    <span class="s" style="top:60%; left:5%;  font-size:1rem;   animation-delay:1.1s">★</span>
+    <span class="s" style="top:65%; left:20%; font-size:0.7rem; animation-delay:0.5s">✦</span>
+    <span class="s" style="top:58%; left:38%; font-size:1.2rem; animation-delay:0.9s">★</span>
+    <span class="s" style="top:63%; left:55%; font-size:0.8rem; animation-delay:0.3s">✦</span>
+    <span class="s" style="top:61%; left:72%; font-size:1rem;   animation-delay:1.3s">★</span>
+    <span class="s" style="top:66%; left:88%; font-size:0.7rem; animation-delay:0.6s">✦</span>
+    <span class="s" style="top:75%; left:10%; font-size:1.1rem; animation-delay:0.2s">★</span>
+    <span class="s" style="top:78%; left:25%; font-size:0.8rem; animation-delay:0.8s">✦</span>
+    <span class="s" style="top:72%; left:42%; font-size:1rem;   animation-delay:0.4s">★</span>
+    <span class="s" style="top:80%; left:58%; font-size:0.7rem; animation-delay:1.2s">✦</span>
+    <span class="s" style="top:76%; left:74%; font-size:1.1rem; animation-delay:0.7s">★</span>
+    <span class="s" style="top:79%; left:92%; font-size:0.8rem; animation-delay:0.1s">✦</span>
+    <span class="s" style="top:88%; left:7%;  font-size:1rem;   animation-delay:0.5s">★</span>
+    <span class="s" style="top:92%; left:22%; font-size:0.7rem; animation-delay:1s">✦</span>
+    <span class="s" style="top:85%; left:40%; font-size:1.2rem; animation-delay:0.3s">★</span>
+    <span class="s" style="top:90%; left:57%; font-size:0.8rem; animation-delay:0.9s">✦</span>
+    <span class="s" style="top:87%; left:75%; font-size:1rem;   animation-delay:0.6s">★</span>
+    <span class="s" style="top:93%; left:90%; font-size:0.7rem; animation-delay:1.4s">✦</span>
+  </div>
+
+  <!-- Floating page navigation — snake tongue -->
+  <div class="float-nav">
+    <div class="float-nav-body">
+      <span class="float-nav-label">More Events</span>
+      <div class="float-nav-links">
+        <a href="#this-month">✦ This Month</a>
+        <a href="#upcoming">✦ Upcoming</a>
+        <a href="#past-events">✦ Past</a>
+      </div>
+    </div>
+    <div class="float-nav-tongue"></div>
+  </div>
+
+  <!-- Login modal -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-modal">
+      <button class="login-modal-close" onclick="closeLogin()">✕</button>
+      <h2>Welcome Back</h2>
+      <p class="login-modal-sub">Sign in to your Mystic Willow account</p>
+      <div class="login-field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" />
+      </div>
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+      </div>
+      <div class="login-forgot"><a href="#">Forgot password?</a></div>
+      <button class="login-submit">Sign In ✦</button>
+      <p class="login-divider">— or —</p>
+      <p class="login-register">New here? <a href="register.html#signup">Create an account</a></p>
+    </div>
+  </div>
+
+  <!-- Top navigation -->
+  <nav>
+    <span class="logo"><img src="logo.jpeg.jpeg" alt="Mystic Willow Logo" /> Mystic Willow Events</span>
+    <button class="nav-login-btn" onclick="openLogin()">✦ Sign In</button>
+  </nav>
+
+  <script>
+    function openLogin()  { document.getElementById('loginOverlay').classList.add('open'); }
+    function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
+    document.getElementById('loginOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeLogin();
+    });
+  </script>
+
+  <!-- Banner image -->
+  <div class="banner">
+    <img src="homepage.jpg.jpeg" alt="Mystic Willow Banner" />
+  </div>
+
+  <!-- Sub navigation -->
+  <div class="subnav">
+    <a href="index.html">Home</a>
+    <a href="index.html">Our Story</a>
+    <a href="#">Shop</a>
+    <a href="#">Gallery</a>
+    <a href="events.html">Events</a>
+    <a href="#">Tarot Readings</a>
+    <a href="members.html">Members</a>
+    <a href="#">Contact</a>
+  </div>
+
+  <!-- This Month section -->
+  <div id="this-month" class="page-content" style="margin-bottom: 2rem;">
+    <h1 class="page-title">✦ This Month ✦</h1>
+    <div class="events-grid">
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event1.jpg" alt="Event 1" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title One</h2>
+          <p class="event-date">📅 Saturday 10th April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event2.jpg" alt="Event 2" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Two</h2>
+          <p class="event-date">📅 Sunday 20th April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event3.jpg" alt="Event 3" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Three</h2>
+          <p class="event-date">📅 Wednesday 30th April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event1.jpg" alt="Event 4" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Four</h2>
+          <p class="event-date">📅 Thursday 2nd April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event2.jpg" alt="Event 5" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Five</h2>
+          <p class="event-date">📅 Friday 17th April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event3.jpg" alt="Event 6" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Six</h2>
+          <p class="event-date">📅 Tuesday 28th April 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Upcoming Events content -->
+  <div id="upcoming" class="page-content">
+    <h1 class="page-title">✦ Upcoming Events ✦</h1>
+
+    <div class="events-grid">
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event1.jpg" alt="Event 1" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title One</h2>
+          <p class="event-date">📅 Saturday 10th May 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event2.jpg" alt="Event 2" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Two</h2>
+          <p class="event-date">📅 Sunday 24th May 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-img-wrap">
+          <img src="event3.jpg" alt="Event 3" />
+        </div>
+        <div class="event-card-body">
+          <h2 class="event-name">Event Title Three</h2>
+          <p class="event-date">📅 Friday 6th June 2026</p>
+          <p class="event-location">📍 Cornwall, UK</p>
+          <p class="event-desc">A wonderful description of the event goes here. Tell your guests what to expect and why they should come along.</p>
+          <a href="#" class="event-link">Book Now →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Past Events carousel -->
+  <div id="past-events" class="page-content past-events-section">
+    <h1 class="page-title">✦ Past Events ✦</h1>
+    <div class="carousel-wrapper">
+      <div class="carousel-track">
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event1.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event One</h2>
+            <p class="event-date">📅 March 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A magical evening filled with wonder and connection.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event2.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Two</h2>
+            <p class="event-date">📅 February 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">An unforgettable gathering of like-minded souls.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event3.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Three</h2>
+            <p class="event-date">📅 January 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A breathtaking celebration of spirit and nature.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event1.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Four</h2>
+            <p class="event-date">📅 December 2025</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A winter solstice evening of warmth and magic.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event2.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Five</h2>
+            <p class="event-date">📅 November 2025</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A special seasonal gathering by the sea.</p>
+          </div>
+        </div>
+        <!-- Duplicates for seamless loop -->
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event1.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event One</h2>
+            <p class="event-date">📅 March 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A magical evening filled with wonder and connection.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event2.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Two</h2>
+            <p class="event-date">📅 February 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">An unforgettable gathering of like-minded souls.</p>
+          </div>
+        </div>
+        <div class="event-card carousel-card">
+          <div class="event-img-wrap"><img src="event3.jpg" alt="Past Event" /></div>
+          <div class="event-card-body">
+            <h2 class="event-name">Past Event Three</h2>
+            <p class="event-date">📅 January 2026</p>
+            <p class="event-location">📍 Cornwall, UK</p>
+            <p class="event-desc">A breathtaking celebration of spirit and nature.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">Mystic Willow Events</p>
+    <p class="footer-text">© 2026 Mystic Willow Events · Crafted with intention · All rights reserved</p>
+  </footer>
+
+</body>
+</html>
